@@ -10,10 +10,14 @@ function numWithKids() {
 
 function awardsByBirth() {
     return db.celebrities.aggregate([
+        { $project: { birth: '$birthplace', awards1: { $objectToArray: "$awards" } } },
+        { $unwind: "$awards1" },
         {
-            $group: {_id: birthplace, awards: {
-                $sum: awards
-            }}
+            $group: {
+                _id: '$birth', awards: {
+                    $sum: '$awards1.v'
+                }
+            }
         }
     ])
 }
